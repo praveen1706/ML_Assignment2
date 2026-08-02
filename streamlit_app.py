@@ -37,17 +37,17 @@ selected_model = st.selectbox(
 ]
 )
 if selected_model == "Logistic Regression":
-model = LogisticRegression(max_iter=5000)
+    model = LogisticRegression(max_iter=5000)
 elif selected_model == "Decision Tree":
-model = DecisionTreeClassifier(random_state=42)
+    model = DecisionTreeClassifier(random_state=42)
 elif selected_model == "KNN":
-model = KNeighborsClassifier()
+    model = KNeighborsClassifier()
 elif selected_model == "Naive Bayes":
-model = GaussianNB()
+    model = GaussianNB()
 elif selected_model == "Random Forest":
-model = RandomForestClassifier(
-n_estimators=100,
-random_state=42
+    model = RandomForestClassifier(
+    n_estimators=100,
+    random_state=42
 )
 model.fit(X_train, y_train)
 
