@@ -41,7 +41,8 @@ selected_model = st.selectbox(
 "Random Forest"
 ]
 )
-if selected_model == "Logistic Regression": LogisticRegression(
+if selected_model == "Logistic Regression": 
+    mode1 = LogisticRegression(
     solver="liblinear",
     max_iter=10000,
     random_state=42
