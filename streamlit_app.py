@@ -31,7 +31,7 @@ model_options = {
     "Naive Bayes": "models/naive_bayes.pkl",
     "Random Forest": "models/random_forest.pkl"
 }
-
+'''
 selected_model = st.selectbox(
 "Choose Model",
 [
@@ -42,7 +42,6 @@ selected_model = st.selectbox(
 "Random Forest"
 ]
 )
-'''
 if selected_model == "Logistic Regression": 
     mode1 = logistic_regression(
     solver="liblinear",
