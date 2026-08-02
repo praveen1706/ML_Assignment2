@@ -1,15 +1,6 @@
 import streamlit as st
 import pandas as pd
-
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import RandomForestClassifier
-
+import joblib
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -21,10 +12,6 @@ from sklearn.metrics import (
     classification_report
 )
 
-# -------------------------------------------
-# Streamlit Page Configuration
-# -------------------------------------------
-
 st.set_page_config(
     page_title="Machine Learning Assignment 2",
     page_icon="📊",
@@ -34,30 +21,48 @@ st.set_page_config(
 st.title("Machine Learning Classification Dashboard")
 
 st.write(
-    "Upload a CSV dataset and evaluate different classification models."
+    "Upload test data and evaluate different machine learning models."
 )
 
-# -------------------------------------------
-# Model Selection
-# -------------------------------------------
+model_options = {
+    "Logistic Regression": "models/logistic_regression.pkl",
+    "Decision Tree": "models/decision_tree.pkl",
+    "KNN": "models/knn.pkl",
+    "Naive Bayes": "models/naive_bayes.pkl",
+    "Random Forest": "models/random_forest.pkl"
+}
+selected_model = st.selectbox(
+"Choose Model",
+[
+"Logistic Regression",
+"Decision Tree",
+"KNN",
+"Naive Bayes",
+"Random Forest"
+]
+)
+if selected_model == "Logistic Regression":
+model = LogisticRegression(max_iter=5000)
+elif selected_model == "Decision Tree":
+model = DecisionTreeClassifier(random_state=42)
+elif selected_model == "KNN":
+model = KNeighborsClassifier()
+elif selected_model == "Naive Bayes":
+model = GaussianNB()
+elif selected_model == "Random Forest":
+model = RandomForestClassifier(
+n_estimators=100,
+random_state=42
+)
+model.fit(X_train, y_train)
 
 selected_model = st.selectbox(
     "Select Model",
-    [
-        "Logistic Regression",
-        "Decision Tree",
-        "KNN",
-        "Naive Bayes",
-        "Random Forest"
-    ]
+    list(model_options.keys())
 )
 
-# -------------------------------------------
-# File Upload
-# -------------------------------------------
-
 uploaded_file = st.file_uploader(
-    "Upload Dataset CSV",
+    "Upload Test Dataset CSV",
     type=["csv"]
 )
 
@@ -65,217 +70,94 @@ if uploaded_file is not None:
 
     data = pd.read_csv(uploaded_file)
 
-    st.subheader("Dataset Preview")
+    st.subheader("Uploaded Dataset")
     st.dataframe(data.head())
 
-    # ---------------------------------------
-    # Check Target Column
-    # ---------------------------------------
-
     if "income" not in data.columns:
-        st.error(
-            "Target column 'income' not found in the uploaded CSV."
-        )
-        st.stop()
+        st.error("Target column 'income' not found.")
+    else:
 
-    # ---------------------------------------
-    # Features and Target
-    # ---------------------------------------
+        X = data.drop("income", axis=1)
+        y = data["income"]
 
-    X = data.drop("income", axis=1)
-    y = data["income"]
-
-    # ---------------------------------------
-    # Handle Missing Values
-    # ---------------------------------------
-
-    X = X.fillna("Unknown")
-
-    # ---------------------------------------
-    # Encode Categorical Features
-    # ---------------------------------------
-
-    X = pd.get_dummies(
-        X,
-        drop_first=True
-    )
-
-    # Force Numeric Data Type
-
-    X = X.astype(float)
-
-    # ---------------------------------------
-    # Encode Target Column
-    # ---------------------------------------
-
-    if y.dtype == "object":
-        le = LabelEncoder()
-        y = le.fit_transform(y)
-
-    # ---------------------------------------
-    # Split Dataset
-    # ---------------------------------------
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=0.2,
-        random_state=42,
-        stratify=y
-    )
-
-    # ---------------------------------------
-    # Select Model
-    # ---------------------------------------
-
-    if selected_model == "Logistic Regression":
-
-        model = LogisticRegression(
-            solver="liblinear",
-            max_iter=5000,
-            random_state=42
+        model = joblib.load(
+            model_options[selected_model]
         )
 
-    elif selected_model == "Decision Tree":
+        y_pred = model.predict(X)
 
-        model = DecisionTreeClassifier(
-            random_state=42
+        if hasattr(model, "predict_proba"):
+            y_prob = model.predict_proba(X)[:, 1]
+            auc = roc_auc_score(y, y_prob)
+        else:
+            auc = 0
+
+        accuracy = accuracy_score(y, y_pred)
+        precision = precision_score(
+            y,
+            y_pred,
+            zero_division=0
+        )
+        recall = recall_score(
+            y,
+            y_pred,
+            zero_division=0
+        )
+        f1 = f1_score(
+            y,
+            y_pred,
+            zero_division=0
+        )
+        mcc = matthews_corrcoef(
+            y,
+            y_pred
         )
 
-    elif selected_model == "KNN":
+        st.subheader("Evaluation Metrics")
 
-        model = KNeighborsClassifier()
+        col1, col2, col3 = st.columns(3)
 
-    elif selected_model == "Naive Bayes":
-
-        model = GaussianNB()
-
-    elif selected_model == "Random Forest":
-
-        model = RandomForestClassifier(
-            n_estimators=100,
-            random_state=42
+        col1.metric(
+            "Accuracy",
+            f"{accuracy:.4f}"
         )
 
-    # ---------------------------------------
-    # Train Model
-    # ---------------------------------------
-
-    model.fit(X_train, y_train)
-
-    # ---------------------------------------
-    # Predictions
-    # ---------------------------------------
-
-    y_pred = model.predict(X_test)
-
-    # ---------------------------------------
-    # Metrics
-    # ---------------------------------------
-
-    accuracy = accuracy_score(
-        y_test,
-        y_pred
-    )
-
-    precision = precision_score(
-        y_test,
-        y_pred,
-        zero_division=0
-    )
-
-    recall = recall_score(
-        y_test,
-        y_pred,
-        zero_division=0
-    )
-
-    f1 = f1_score(
-        y_test,
-        y_pred,
-        zero_division=0
-    )
-
-    mcc = matthews_corrcoef(
-        y_test,
-        y_pred
-    )
-
-    # ---------------------------------------
-    # AUC Score
-    # ---------------------------------------
-
-    try:
-        y_prob = model.predict_proba(X_test)[:, 1]
-
-        auc = roc_auc_score(
-            y_test,
-            y_prob
+        col2.metric(
+            "AUC",
+            f"{auc:.4f}"
         )
 
-    except Exception:
-        auc = 0.0
+        col3.metric(
+            "Precision",
+            f"{precision:.4f}"
+        )
 
-    # ---------------------------------------
-    # Display Metrics
-    # ---------------------------------------
+        col1.metric(
+            "Recall",
+            f"{recall:.4f}"
+        )
 
-    st.subheader("Evaluation Metrics")
+        col2.metric(
+            "F1 Score",
+            f"{f1:.4f}"
+        )
 
-    col1, col2, col3 = st.columns(3)
+        col3.metric(
+            "MCC",
+            f"{mcc:.4f}"
+        )
 
-    col1.metric(
-        "Accuracy",
-        f"{accuracy:.4f}"
-    )
+        st.subheader("Confusion Matrix")
 
-    col2.metric(
-        "AUC",
-        f"{auc:.4f}"
-    )
+        st.write(
+            confusion_matrix(y, y_pred)
+        )
 
-    col3.metric(
-        "Precision",
-        f"{precision:.4f}"
-    )
+        st.subheader("Classification Report")
 
-    col1.metric(
-        "Recall",
-        f"{recall:.4f}"
-    )
-
-    col2.metric(
-        "F1 Score",
-        f"{f1:.4f}"
-    )
-
-    col3.metric(
-        "MCC",
-        f"{mcc:.4f}"
-    )
-
-    # ---------------------------------------
-    # Confusion Matrix
-    # ---------------------------------------
-
-    st.subheader("Confusion Matrix")
-
-    cm = confusion_matrix(
-        y_test,
-        y_pred
-    )
-
-    st.write(cm)
-
-    # ---------------------------------------
-    # Classification Report
-    # ---------------------------------------
-
-    st.subheader("Classification Report")
-
-    report = classification_report(
-        y_test,
-        y_pred
-    )
-
-    st.text(report)
+        st.text(
+            classification_report(
+                y,
+                y_pred
+            )
+        )
