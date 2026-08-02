@@ -46,6 +46,7 @@ selected_model = st.selectbox(
 "Naive Bayes",
 "Random Forest"
 ]
+)
 if selected_model == "Logistic Regression":
     model = LogisticRegression(max_iter=5000)
 
