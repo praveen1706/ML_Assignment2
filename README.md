@@ -55,5 +55,5 @@ https://github.com/praveen1706/ML\_Assignment2
 ## Deployment
 
 * Streamlit Community Cloud
-* Live App Link: Add after deployment
+* Live App Link: https://cnnmlassignment2.streamlit.app/
 
