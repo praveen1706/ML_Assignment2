@@ -66,7 +66,7 @@ os.makedirs("models", exist_ok=True)
 # Models
 models = {
     "Logistic Regression": LogisticRegression(
-    solver='saga',
+    solver="liblinear",
     max_iter=5000,
     random_state=42
 ),
