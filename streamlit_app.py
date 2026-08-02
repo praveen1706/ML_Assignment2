@@ -24,8 +24,13 @@ st.write(
     "Upload test data and evaluate different machine learning models."
 )
 
-
-'''
+model_options = {
+    "Logistic Regression": "models/logistic_regression.pkl",
+    "Decision Tree": "models/decision_tree.pkl",
+    "KNN": "models/knn.pkl",
+    "Naive Bayes": "models/naive_bayes.pkl",
+    "Random Forest": "models/random_forest.pkl"
+}
 selected_model = st.selectbox(
 "Choose Model",
 [
@@ -36,56 +41,20 @@ selected_model = st.selectbox(
 "Random Forest"
 ]
 )
-'''
-'''
 if selected_model == "Logistic Regression":
-    model = logistic_regression(
-    solver='saga',
-    max_iter=5000,
-    random_state=42
-)
+model = LogisticRegression(max_iter=5000)
 elif selected_model == "Decision Tree":
-    model = decision_tree(random_state=42)
+model = DecisionTreeClassifier(random_state=42)
 elif selected_model == "KNN":
-    model = knn()
+model = KNeighborsClassifier()
 elif selected_model == "Naive Bayes":
-    model = naive_bayes()
+model = GaussianNB()
 elif selected_model == "Random Forest":
-    model = random_forest(
-    n_estimators=1000,
-    random_state=42
+model = RandomForestClassifier(
+n_estimators=100,
+random_state=42
 )
 model.fit(X_train, y_train)
-
-'''
-
-model_options = {
-    if selected_model =="Logistic Regression":
-        model = logistic_regression(
-        solver='saga',
-        max_iter=5000,
-        random_state=42
-)
-    elif selected_model == "Decision Tree":
-        model = decision_tree(random_state=42)
-    elif selected_model == "KNN":
-        model = knn()
-    elif selected_model == "Naive Bayes":
-        model = naive_bayes()
-    elif selected_model == "Random Forest":
-        model = random_forest(
-        n_estimators=1000,
-        random_state=42
-
-    '''
-    "Logistic Regression": "models/logistic_regression.pkl",
-    "Decision Tree": "models/decision_tree.pkl",
-    "KNN": "models/knn.pkl",
-    "Naive Bayes": "models/naive_bayes.pkl",
-    "Random Forest": "models/random_forest.pkl"
-
-    '''
-}
 
 selected_model = st.selectbox(
     "Select Model",
@@ -96,7 +65,6 @@ uploaded_file = st.file_uploader(
     "Upload Test Dataset CSV",
     type=["csv"]
 )
-
 
 if uploaded_file is not None:
 
