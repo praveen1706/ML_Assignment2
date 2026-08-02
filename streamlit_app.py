@@ -56,55 +56,30 @@ if uploaded_file is not None:
         st.dataframe(data.head())
 
         if "income" not in data.columns:
-            st.error(
-                "Target column 'income' not found in the dataset."
-            )
+            st.error("Target column 'income' not found.")
             st.stop()
 
-        # -------------------------
-        # Features and Target
-        # -------------------------
-
+        # Features and target
         X = data.drop("income", axis=1)
         y = data["income"]
 
-        # -------------------------
-        # Handle Missing Values
-        # -------------------------
+        # Encode target to 0/1
+        target_encoder = LabelEncoder()
+        y = target_encoder.fit_transform(y)
 
+        # Handle missing values
         X = X.fillna("Unknown")
 
-        # -------------------------
-        # Convert Categorical Data
-        # -------------------------
+        # Convert categorical features
+        X = pd.get_dummies(X, drop_first=True)
 
-        X = pd.get_dummies(
-            X,
-            drop_first=True
-        )
-
-        # -------------------------
-        # Force Numeric Types
-        # -------------------------
-
+        # Ensure all numeric
         X = X.astype(float)
 
-        # Remove NaN if any
         X.replace([np.inf, -np.inf], np.nan, inplace=True)
         X.fillna(0, inplace=True)
 
-        # -------------------------
-        # Encode Target
-        # -------------------------
-
-        if y.dtype == "object":
-            encoder = LabelEncoder()
-            y = encoder.fit_transform(y)
-
-        # -------------------------
-        # Train Test Split
-        # -------------------------
-
+        # Split data
         X_train, X_test, y_train, y_test = train_test_split(
             X,
             y,
@@ -113,10 +88,7 @@ if uploaded_file is not None:
             stratify=y
         )
 
-        # -------------------------
-        # Select Model
-        # -------------------------
-
+        # Select model
         if selected_model == "Logistic Regression":
 
             model = LogisticRegression(
@@ -145,32 +117,14 @@ if uploaded_file is not None:
                 random_state=42
             )
 
-        # -------------------------
-        # Debug Information
-        # -------------------------
-
-        st.write("Training Shape:", X_train.shape)
-
-        # -------------------------
-        # Train Model
-        # -------------------------
-
+        # Train model
         model.fit(X_train, y_train)
 
-        # -------------------------
-        # Prediction
-        # -------------------------
-
+        # Predictions
         y_pred = model.predict(X_test)
 
-        # -------------------------
         # Metrics
-        # -------------------------
-
-        accuracy = accuracy_score(
-            y_test,
-            y_pred
-        )
+        accuracy = accuracy_score(y_test, y_pred)
 
         precision = precision_score(
             y_test,
@@ -197,17 +151,16 @@ if uploaded_file is not None:
 
         try:
             y_prob = model.predict_proba(X_test)[:, 1]
+
             auc = roc_auc_score(
                 y_test,
                 y_prob
             )
-        except:
-            auc = 0
 
-        # -------------------------
+        except Exception:
+            auc = 0.0
+
         # Display Metrics
-        # -------------------------
-
         st.subheader("Evaluation Metrics")
 
         col1, col2, col3 = st.columns(3)
@@ -220,17 +173,15 @@ if uploaded_file is not None:
         col2.metric("F1 Score", f"{f1:.4f}")
         col3.metric("MCC", f"{mcc:.4f}")
 
+        # Confusion Matrix
         st.subheader("Confusion Matrix")
         st.write(confusion_matrix(y_test, y_pred))
 
+        # Classification Report
         st.subheader("Classification Report")
-        st.text(
-            classification_report(
-                y_test,
-                y_pred
-            )
-        )
+        st.text(classification_report(y_test, y_pred))
 
     except Exception as e:
-        st.error("Actual Error:")
+
+        st.error("Actual Error")
         st.code(str(e))
