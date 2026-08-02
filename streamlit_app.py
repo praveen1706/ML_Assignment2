@@ -23,7 +23,7 @@ st.title("Machine Learning Classification Dashboard")
 st.write(
     "Upload test data and evaluate different machine learning models."
 )
-
+'''
 model_options = {
     "Logistic Regression": "models/logistic_regression.pkl",
     "Decision Tree": "models/decision_tree.pkl",
@@ -31,6 +31,7 @@ model_options = {
     "Naive Bayes": "models/naive_bayes.pkl",
     "Random Forest": "models/random_forest.pkl"
 }
+
 selected_model = st.selectbox(
 "Choose Model",
 [
@@ -41,6 +42,7 @@ selected_model = st.selectbox(
 "Random Forest"
 ]
 )
+'''
 if selected_model == "Logistic Regression": 
     mode1 = logistic_regression(
     solver="liblinear",
