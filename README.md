@@ -10,7 +10,7 @@ Build and compare multiple machine learning classification models on a public da
 * Source: UCI Machine Learning Repository
 * Type: Binary Classification
 * Target Variable: income
-* Minimum requirements satisfied: More than 12 features and more than 400 records.
+* Minimum requirements satisfied: More than 12 features and more than 500 records.
 
 ## GitHub Repository Link
 
