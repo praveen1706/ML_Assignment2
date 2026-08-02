@@ -42,19 +42,19 @@ selected_model = st.selectbox(
 ]
 )
 if selected_model == "Logistic Regression": 
-    mode1 = LogisticRegression(
+    mode1 = logistic_regression(
     solver="liblinear",
     max_iter=10000,
     random_state=42
 )
 elif selected_model == "Decision Tree":
-    model = DecisionTreeClassifier(random_state=42)
+    model = decision_tree(random_state=42)
 elif selected_model == "KNN":
-    model = KNeighborsClassifier()
+    model = knn()
 elif selected_model == "Naive Bayes":
-    model = GaussianNB()
+    model = naive_bayes()
 elif selected_model == "Random Forest":
-    model = RandomForestClassifier(
+    model = random_forest(
     n_estimators=100,
     random_state=42
 )
