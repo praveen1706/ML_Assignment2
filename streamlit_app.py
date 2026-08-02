@@ -41,8 +41,10 @@ selected_model = st.selectbox(
 "Random Forest"
 ]
 )
-if selected_model == "Logistic Regression":
-    model = LogisticRegression(max_iter=5000)
+if selected_model == "Logistic Regression": LogisticRegression(
+    solver="liblinear",
+    max_iter=5000,
+    random_state=42
 elif selected_model == "Decision Tree":
     model = DecisionTreeClassifier(random_state=42)
 elif selected_model == "KNN":
