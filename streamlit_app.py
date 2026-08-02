@@ -43,7 +43,7 @@ selected_model = st.selectbox(
 )
 if selected_model == "Logistic Regression": LogisticRegression(
     solver="liblinear",
-    max_iter=5000,
+    max_iter=10000,
     random_state=42
 )
 elif selected_model == "Decision Tree":
