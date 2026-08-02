@@ -1,6 +1,15 @@
 import streamlit as st
 import pandas as pd
-import joblib
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier
+
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -13,61 +22,26 @@ from sklearn.metrics import (
 )
 
 st.set_page_config(
-    page_title="Machine Learning Assignment 2",
+    page_title="ML Assignment 2",
     page_icon="📊",
     layout="wide"
 )
 
 st.title("Machine Learning Classification Dashboard")
 
-st.write(
-    "Upload test data and evaluate different machine learning models."
-)
-'''
-model_options = {
-    "Logistic Regression": "models/logistic_regression.pkl",
-    "Decision Tree": "models/decision_tree.pkl",
-    "KNN": "models/knn.pkl",
-    "Naive Bayes": "models/naive_bayes.pkl",
-    "Random Forest": "models/random_forest.pkl"
-}
-'''
-selected_model = st.selectbox(
-"Choose Model",
-[
-"Logistic Regression",
-"Decision Tree",
-"KNN",
-"Naive Bayes",
-"Random Forest"
-]
-)
-if selected_model == "Logistic Regression": 
-    mode1 = logistic_regression(
-    solver="liblinear",
-    max_iter=10000,
-    random_state=42
-)
-elif selected_model == "Decision Tree":
-    model = decision_tree(random_state=42)
-elif selected_model == "KNN":
-    model = knn()
-elif selected_model == "Naive Bayes":
-    model = naive_bayes()
-elif selected_model == "Random Forest":
-    model = random_forest(
-    n_estimators=100,
-    random_state=42
-)
-model.fit(X_train, y_train)
-
 selected_model = st.selectbox(
     "Select Model",
-    list(model_options.keys())
+    [
+        "Logistic Regression",
+        "Decision Tree",
+        "KNN",
+        "Naive Bayes",
+        "Random Forest"
+    ]
 )
 
 uploaded_file = st.file_uploader(
-    "Upload Test Dataset CSV",
+    "Upload CSV File",
     type=["csv"]
 )
 
@@ -75,94 +49,85 @@ if uploaded_file is not None:
 
     data = pd.read_csv(uploaded_file)
 
-    st.subheader("Uploaded Dataset")
+    st.subheader("Dataset Preview")
     st.dataframe(data.head())
 
     if "income" not in data.columns:
         st.error("Target column 'income' not found.")
-    else:
+        st.stop()
 
-        X = data.drop("income", axis=1)
-        y = data["income"]
+    X = data.drop("income", axis=1)
+    y = data["income"]
 
-        model = joblib.load(
-            model_options[selected_model]
+    X = pd.get_dummies(X, drop_first=True)
+
+    X = X.fillna(0)
+
+    if y.dtype == "object":
+        le = LabelEncoder()
+        y = le.fit_transform(y)
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X,
+        y,
+        test_size=0.2,
+        random_state=42,
+        stratify=y
+    )
+
+    if selected_model == "Logistic Regression":
+        model = LogisticRegression(
+            solver="liblinear",
+            max_iter=5000
         )
 
-        y_pred = model.predict(X)
-
-        if hasattr(model, "predict_proba"):
-            y_prob = model.predict_proba(X)[:, 1]
-            auc = roc_auc_score(y, y_prob)
-        else:
-            auc = 0
-
-        accuracy = accuracy_score(y, y_pred)
-        precision = precision_score(
-            y,
-            y_pred,
-            zero_division=0
-        )
-        recall = recall_score(
-            y,
-            y_pred,
-            zero_division=0
-        )
-        f1 = f1_score(
-            y,
-            y_pred,
-            zero_division=0
-        )
-        mcc = matthews_corrcoef(
-            y,
-            y_pred
+    elif selected_model == "Decision Tree":
+        model = DecisionTreeClassifier(
+            random_state=42
         )
 
-        st.subheader("Evaluation Metrics")
+    elif selected_model == "KNN":
+        model = KNeighborsClassifier()
 
-        col1, col2, col3 = st.columns(3)
+    elif selected_model == "Naive Bayes":
+        model = GaussianNB()
 
-        col1.metric(
-            "Accuracy",
-            f"{accuracy:.4f}"
+    elif selected_model == "Random Forest":
+        model = RandomForestClassifier(
+            n_estimators=100,
+            random_state=42
         )
 
-        col2.metric(
-            "AUC",
-            f"{auc:.4f}"
-        )
+    model.fit(X_train, y_train)
 
-        col3.metric(
-            "Precision",
-            f"{precision:.4f}"
-        )
+    y_pred = model.predict(X_test)
 
-        col1.metric(
-            "Recall",
-            f"{recall:.4f}"
-        )
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred, zero_division=0)
+    recall = recall_score(y_test, y_pred, zero_division=0)
+    f1 = f1_score(y_test, y_pred, zero_division=0)
+    mcc = matthews_corrcoef(y_test, y_pred)
 
-        col2.metric(
-            "F1 Score",
-            f"{f1:.4f}"
-        )
+    try:
+        y_prob = model.predict_proba(X_test)[:, 1]
+        auc = roc_auc_score(y_test, y_prob)
+    except:
+        auc = 0.0
 
-        col3.metric(
-            "MCC",
-            f"{mcc:.4f}"
-        )
+    st.subheader("Evaluation Metrics")
 
-        st.subheader("Confusion Matrix")
+    col1, col2, col3 = st.columns(3)
 
-        st.write(
-            confusion_matrix(y, y_pred)
-        )
+    col1.metric("Accuracy", round(accuracy, 4))
+    col2.metric("AUC", round(auc, 4))
+    col3.metric("Precision", round(precision, 4))
 
-        st.subheader("Classification Report")
+    col1.metric("Recall", round(recall, 4))
+    col2.metric("F1 Score", round(f1, 4))
+    col3.metric("MCC", round(mcc, 4))
 
-        st.text(
-            classification_report(
-                y,
-                y_pred
-            )
-        )
+    st.subheader("Confusion Matrix")
+    st.write(confusion_matrix(y_test, y_pred))
+
+    st.subheader("Classification Report")
+    st.text(classification_report(y_test, y_pred))
