@@ -296,8 +296,17 @@ if uploaded_file is not None:
                 y_pred
             )
         )
+        
+        # ----------------------------
+        # CLASSIFICATION DISTRIBUTION
+        # ----------------------------
+
+        st.subheader("Class Distribution")
+        st.write(data["income"].value_counts())
+    
 
     except Exception as e:
 
         st.error("Actual Error")
         st.code(str(e))
+
