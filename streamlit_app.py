@@ -24,6 +24,35 @@ st.write(
     "Upload test data and evaluate different machine learning models."
 )
 
+
+
+selected_model = st.selectbox(
+"Choose Model",
+[
+"Logistic Regression",
+"Decision Tree",
+"KNN",
+"Naive Bayes",
+"Random Forest"
+]
+)
+if selected_model == "Logistic Regression":
+model = LogisticRegression(max_iter=5000)
+elif selected_model == "Decision Tree":
+model = DecisionTreeClassifier(random_state=42)
+elif selected_model == "KNN":
+model = KNeighborsClassifier()
+elif selected_model == "Naive Bayes":
+model = GaussianNB()
+elif selected_model == "Random Forest":
+model = RandomForestClassifier(
+n_estimators=100,
+random_state=42
+)
+model.fit(X_train, y_train)
+
+
+'''
 model_options = {
     "Logistic Regression": "models/logistic_regression.pkl",
     "Decision Tree": "models/decision_tree.pkl",
@@ -41,6 +70,7 @@ uploaded_file = st.file_uploader(
     "Upload Test Dataset CSV",
     type=["csv"]
 )
+'''
 
 if uploaded_file is not None:
 
