@@ -1,3 +1,9 @@
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier
+
 import streamlit as st
 import pandas as pd
 import joblib
@@ -40,22 +46,24 @@ selected_model = st.selectbox(
 "Naive Bayes",
 "Random Forest"
 ]
-)
-if selected_model == "Logistic Regression": LogisticRegression(
-    solver="liblinear",
-    max_iter=5000,
-    random_state=42)
+if selected_model == "Logistic Regression":
+    model = LogisticRegression(max_iter=5000)
+
 elif selected_model == "Decision Tree":
     model = DecisionTreeClassifier(random_state=42)
+
 elif selected_model == "KNN":
     model = KNeighborsClassifier()
+
 elif selected_model == "Naive Bayes":
     model = GaussianNB()
+
 elif selected_model == "Random Forest":
     model = RandomForestClassifier(
-    n_estimators=100,
-    random_state=42
-)
+        n_estimators=100,
+        random_state=42
+    )
+
 model.fit(X_train, y_train)
 
 selected_model = st.selectbox(
