@@ -65,7 +65,11 @@ os.makedirs("models", exist_ok=True)
 
 # Models
 models = {
-    "Logistic Regression": LogisticRegression(max_iter=1000),
+    "Logistic Regression": LogisticRegression(
+    solver='saga',
+    max_iter=5000,
+    random_state=42
+),
     "Decision Tree": DecisionTreeClassifier(random_state=42),
     "KNN": KNeighborsClassifier(n_neighbors=5),
     "Naive Bayes": GaussianNB(),
