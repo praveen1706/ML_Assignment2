@@ -11,7 +11,7 @@ Build and compare multiple machine learning classification models on a public da
 - Minimum requirements satisfied: More than 12 features and more than 500 records.
 
 ## GitHub Repository Link
-Add your GitHub repository link here.
+https://github.com/praveen1706/ML_Assignment2
 
 ## Models Used
 1. Logistic Regression
