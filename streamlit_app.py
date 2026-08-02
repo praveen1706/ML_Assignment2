@@ -46,7 +46,7 @@ elif selected_model == "Naive Bayes":
     model = GaussianNB()
 elif selected_model == "Random Forest":
     model = RandomForestClassifier(
-    n_estimators=100,
+    n_estimators=1000,
     random_state=42
 )
 model.fit(X_train, y_train)
