@@ -64,12 +64,12 @@ model_options = {
     "Naive Bayes": "models/naive_bayes.pkl",
     "Random Forest": "models/random_forest.pkl"
 }
-
+'''
 selected_model = st.selectbox(
     "Select Model",
     list(model_options.keys())
 )
-'''
+
 uploaded_file = st.file_uploader(
     "Upload Test Dataset CSV",
     type=["csv"]
