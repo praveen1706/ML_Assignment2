@@ -37,7 +37,11 @@ selected_model = st.selectbox(
 ]
 )
 if selected_model == "Logistic Regression":
-    model = LogisticRegression(max_iter=5000)
+    model = LogisticRegression(
+    solver='saga',
+    max_iter=5000,
+    random_state=42
+)
 elif selected_model == "Decision Tree":
     model = DecisionTreeClassifier(random_state=42)
 elif selected_model == "KNN":
