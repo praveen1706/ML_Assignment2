@@ -44,7 +44,7 @@ for col in df.select_dtypes(include="object").columns:
 
 # Features and target
 X = df.drop("income", axis=1)
-y = df["income"].value_counts()
+y = df["income"]
 
 # Train-test split
 X_train, X_test, y_train, y_test = train_test_split(
