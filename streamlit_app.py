@@ -104,7 +104,9 @@ if uploaded_file is not None:
 
         elif selected_model == "KNN":
 
-            model = KNeighborsClassifier()
+            model = KNeighborsClassifier(
+                n_neighbors=3
+            )
 
         elif selected_model == "Naive Bayes":
 
@@ -180,6 +182,10 @@ if uploaded_file is not None:
         # Classification Report
         st.subheader("Classification Report")
         st.text(classification_report(y_test, y_pred))
+
+        # Classification Distribution
+        st.subheader("Class Distribution")
+        st.write(data["income"].value_counts())
 
     except Exception as e:
 
