@@ -37,7 +37,8 @@ selected_model = st.selectbox(
 ]
 )
 if selected_model == "Logistic Regression":
-    model = LogisticRegression(
+    #model = LogisticRegression
+    (
     solver='saga',
     max_iter=5000,
     random_state=42
