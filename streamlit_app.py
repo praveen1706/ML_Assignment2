@@ -65,12 +65,12 @@ selected_model = st.selectbox(
     "Select Model",
     list(model_options.keys())
 )
-
+'''
 uploaded_file = st.file_uploader(
     "Upload Test Dataset CSV",
     type=["csv"]
 )
-'''
+
 
 if uploaded_file is not None:
 
