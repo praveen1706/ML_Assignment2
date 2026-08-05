@@ -24,9 +24,7 @@ from sklearn.metrics import (
     classification_report
 )
 
-# ----------------------------
-# PAGE CONFIG
-# ----------------------------
+# PAGE SETUP
 
 st.set_page_config(
     page_title="Machine Learning Assignment 2",
@@ -36,9 +34,7 @@ st.set_page_config(
 
 st.title("Machine Learning Classification Dashboard")
 
-# ----------------------------
 # MODEL SELECTION
-# ----------------------------
 
 selected_model = st.selectbox(
     "Select Model",
@@ -53,9 +49,7 @@ selected_model = st.selectbox(
 
 st.write("Selected Model:", selected_model)
 
-# ----------------------------
 # FILE UPLOAD
-# ----------------------------
 
 uploaded_file = st.file_uploader(
     "Upload CSV Dataset",
@@ -75,32 +69,26 @@ if uploaded_file is not None:
             st.error("Target column 'income' not found.")
             st.stop()
 
-        # ----------------------------
-        # FEATURES & TARGET
-        # ----------------------------
+# FEATURES & TARGET
 
         X = data.drop("income", axis=1)
         y = data["income"]
 
-        # Encode target
+# Encode target
         target_encoder = LabelEncoder()
         y = target_encoder.fit_transform(y)
-
-        # Handle missing values
+# Handle missing values
         X = X.fillna("Unknown")
 
-        # One-hot encoding
+# One-hot encoding
         X = pd.get_dummies(X, drop_first=True)
 
-        # Numeric conversion
+# Numeric conversion
         X = X.astype(float)
 
         X.replace([np.inf, -np.inf], np.nan, inplace=True)
         X.fillna(0, inplace=True)
-
-        # ----------------------------
-        # TRAIN TEST SPLIT
-        # ----------------------------
+# TRAIN TEST SPLIT
 
         X_train, X_test, y_train, y_test = train_test_split(
             X,
@@ -110,9 +98,7 @@ if uploaded_file is not None:
             stratify=y
         )
 
-        # ----------------------------
-        # MODEL CREATION
-        # ----------------------------
+# MODEL CREATION
 
         if selected_model == "Logistic Regression":
 
@@ -164,10 +150,7 @@ if uploaded_file is not None:
                 random_state=42,
                 class_weight="balanced"
             )
-
-        # ----------------------------
-        # TRAIN MODEL
-        # ----------------------------
+# TRAIN MODEL
 
         model.fit(X_train, y_train)
 
@@ -175,9 +158,7 @@ if uploaded_file is not None:
             f"Model Trained Successfully: {selected_model}"
         )
 
-        # ----------------------------
-        # PREDICTIONS
-        # ----------------------------
+# PREDICTIONS
 
         y_pred = model.predict(X_test)
 
@@ -186,9 +167,7 @@ if uploaded_file is not None:
             pd.Series(y_pred).value_counts()
         )
 
-        # ----------------------------
-        # METRICS
-        # ----------------------------
+# METRICS
 
         accuracy = accuracy_score(
             y_test,
@@ -233,9 +212,7 @@ if uploaded_file is not None:
 
             auc = 0.0
 
-        # ----------------------------
-        # DISPLAY METRICS
-        # ----------------------------
+# DISPLAY METRICS
 
         st.subheader("Evaluation Metrics")
 
@@ -271,9 +248,7 @@ if uploaded_file is not None:
             f"{mcc:.4f}"
         )
 
-        # ----------------------------
-        # CONFUSION MATRIX
-        # ----------------------------
+# CONFUSION MATRIX
 
         st.subheader("Confusion Matrix")
 
@@ -284,9 +259,7 @@ if uploaded_file is not None:
 
         st.write(cm)
 
-        # ----------------------------
-        # CLASSIFICATION REPORT
-        # ----------------------------
+# CLASSIFICATION REPORT
 
         st.subheader("Classification Report")
 
@@ -297,9 +270,7 @@ if uploaded_file is not None:
             )
         )
         
-        # ----------------------------
-        # CLASSIFICATION DISTRIBUTION
-        # ----------------------------
+# CLASSIFICATION DISTRIBUTION
 
         st.subheader("Class Distribution")
         st.write(data["income"].value_counts())
