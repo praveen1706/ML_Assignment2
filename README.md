@@ -14,7 +14,7 @@ Build and compare multiple machine learning classification models on a public da
 
 ## GitHub Repository Link
 
-https://github.com/praveen1706/ML\_Assignment2
+https://github.com/praveen1706/ML_Assignment2
 
 ## Models Used
 
